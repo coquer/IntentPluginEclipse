@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.core.commands_3.6.1.v20120814-150512.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.core.resources.source_3.8.1.v20120802-154922.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.core.runtime_3.8.0.v20120521-2346.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.e4.ui.workbench3_0.12.0.v20120521-2329.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.equinox.common_3.6.100.v20120522-1841.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.equinox.registry_3.5.200.v20120522-1841.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.jdt.compiler.apt_1.0.500.v20120522-1651.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.jdt.compiler.tool_1.0.101.v20120522-1651.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.jdt.core_3.8.2.v20120814-155456.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.jdt.ui_3.8.1.v20120814-144251.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.jface.text_3.8.1.v20120828-155502.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.jface_3.8.101.v20120817-083647.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.swt_3.100.1.v4234e.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.text_3.5.200.v20120523-1310.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.ui.editors_3.8.0.v20120523-1540.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.ui.ide_3.8.1.v20120828-165804.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.ui.workbench.texteditor_3.8.0.v20120523-1310.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.ui.workbench_3.103.1.v20120906-120042.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/org.eclipse.ui_3.103.0.v20120705-114351.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rylander/Documents/jars/runtime_registry_compatibility.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

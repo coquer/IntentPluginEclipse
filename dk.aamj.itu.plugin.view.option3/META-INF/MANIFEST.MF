@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: IntentPlugin
+Bundle-SymbolicName: dk.aamj.itu.plugin.view.option3; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: dk.aamj.itu.plugin.view.option3.Activator
+Bundle-Vendor: ITU-F2013
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

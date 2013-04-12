@@ -119,7 +119,7 @@ public class MainView extends ViewPart {
 				IntentHandler intenthandler = new IntentHandler();
 				try {
 					
-					showMessage(intenthandler.insertIntent(instanceName, parameter));
+					intenthandler.InsertIntent(instanceName, parameter);
 				
 				} catch (Exception e) {
 

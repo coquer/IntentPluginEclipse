@@ -12,24 +12,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 
 
-/**
- * This sample class demonstrates how to plug-in a new
- * workbench view. The view shows data obtained from the
- * model. The sample creates a dummy model on the fly,
- * but a real implementation would connect to the model
- * available either in this or another plug-in (e.g. the workspace).
- * The view is connected to the model using a content provider.
- * <p>
- * The view uses a label provider to define how model
- * objects should be presented in the view. Each
- * view can present the same model objects using
- * different labels and icons, if needed. Alternatively,
- * a single label provider can be shared between views
- * in order to ensure that objects of the same type are
- * presented in the same way everywhere.
- * <p>
- */
-
 public class MainView extends ViewPart {
 
 	/**
@@ -38,19 +20,10 @@ public class MainView extends ViewPart {
 	public static final String ID = "dk.aamj.itu.plugin.view.option3.views.MainView";
 
 	private TableViewer viewer;
-	private Action action1;
-	private Action action2;
+	private Action Copy;
+	private Action insert;
 	private Action doubleClickAction;
 
-	/*
-	 * The content provider class is responsible for
-	 * providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return
-	 * objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore
-	 * it and always show the same content 
-	 * (like Task List, for example).
-	 */
 	 
 	class ViewContentProvider implements IStructuredContentProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -58,7 +31,7 @@ public class MainView extends ViewPart {
 		public void dispose() {
 		}
 		public Object[] getElements(Object parent) {
-			return new String[] { "One", "Two", "Three" };
+			return new String[] { "IntentOne", "IntentTwo", "IntentThree" };
 		}
 	}
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -121,42 +94,54 @@ public class MainView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
+		manager.add(Copy);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(insert);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(Copy);
+		manager.add(insert);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(Copy);
+		manager.add(insert);
 	}
 
 	private void makeActions() {
-		action1 = new Action() {
+		Copy = new Action() {
 			public void run() {
-				showMessage("Action 1 executed");
+				String instanceName = "i";
+				String parameter = "com.visual.studio.rocks.hell.yea";
+				IntentHandler intenthandler = new IntentHandler();
+				try {
+					
+					showMessage(intenthandler.insertIntent(instanceName, parameter));
+				
+				} catch (Exception e) {
+
+					e.printStackTrace();
+					showMessage("This is log " + e);
+				}
+//				showMessage("copy executed");
 			}
 		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		Copy.setText("Copy");
+		Copy.setToolTipText("Copy tooltip");
+		Copy.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		
-		action2 = new Action() {
+		insert = new Action() {
 			public void run() {
-				showMessage("Action 2 executed");
+				showMessage("insert");
 			}
 		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		insert.setText("insert");
+		insert.setToolTipText("insert tooltip");
+		insert.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
 			public void run() {

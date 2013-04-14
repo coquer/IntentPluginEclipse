@@ -11,3 +11,5 @@
 dk.aamj.pluginview/.classpath
 
 *.prefs
+
+.DS_Store

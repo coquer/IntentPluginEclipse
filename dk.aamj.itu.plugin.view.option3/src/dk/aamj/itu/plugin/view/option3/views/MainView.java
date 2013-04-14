@@ -20,11 +20,10 @@ public class MainView extends ViewPart {
 	public static final String ID = "dk.aamj.itu.plugin.view.option3.views.MainView";
 
 	private TableViewer viewer;
-	private Action Copy;
-	private Action insert;
-	private Action doubleClickAction;
+	private Action InsertAction;
+	private Action CopyAction;
 
-	 
+
 	class ViewContentProvider implements IStructuredContentProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 		}
@@ -53,6 +52,7 @@ public class MainView extends ViewPart {
 	 * The constructor.
 	 */
 	public MainView() {
+		super();
 	}
 
 	/**
@@ -71,7 +71,6 @@ public class MainView extends ViewPart {
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
-		contributeToActionBars();
 	}
 
 	private void hookContextMenu() {
@@ -87,67 +86,69 @@ public class MainView extends ViewPart {
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(Copy);
-		manager.add(new Separator());
-		manager.add(insert);
-	}
-
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(Copy);
-		manager.add(insert);
+		manager.add(CopyAction);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
-	
-	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(Copy);
-		manager.add(insert);
-	}
+
 
 	private void makeActions() {
-		Copy = new Action() {
+
+		CopyAction = new Action() {
 			public void run() {
+
 				String instanceName = "i";
 				String parameter = "com.visual.studio.rocks.hell.yea";
 				IntentHandler intenthandler = new IntentHandler();
+
 				try {
-					
-					intenthandler.InsertIntent(instanceName, parameter);
-				
+
+					intenthandler.CopyIntent(instanceName, parameter);
+
 				} catch (Exception e) {
 
 					e.printStackTrace();
 					showMessage("This is log " + e);
 				}
-//				showMessage("copy executed");
+
 			}
 		};
-		Copy.setText("Copy");
-		Copy.setToolTipText("Copy tooltip");
-		Copy.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		
-		insert = new Action() {
+		CopyAction.setText("Copy");
+		CopyAction.setToolTipText("Copy selected Intent to clipboard");
+		CopyAction.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK)
+				);
+
+		InsertAction = new Action() {
 			public void run() {
-				showMessage("insert");
-			}
-		};
-		insert.setText("insert");
-		insert.setToolTipText("insert tooltip");
-		insert.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		doubleClickAction = new Action() {
-			public void run() {
+
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
-				showMessage("Double-click detected on "+obj.toString());
+
+				String instanceName = "i";
+				String parameter = "com.visual.studio.rocks.hell.yea";
+				IntentHandler intenthandler = new IntentHandler();
+
+				try {
+
+					int result = intenthandler.InsertIntent(instanceName, parameter);
+
+					// Add more error checking here
+					if(result == 0) {
+
+						// Should we create the method for them?
+						showMessage("Please create a method, and position cursor inside method.");
+
+					}
+					// else if (result == 1) { showMessage("You owe me a beer"); } //Success
+
+				} catch (Exception e) {
+
+					e.printStackTrace();
+					showMessage("This is log " + e);
+				}
+
 			}
 		};
 	}
@@ -155,15 +156,16 @@ public class MainView extends ViewPart {
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
+				InsertAction.run();
 			}
 		});
 	}
 	private void showMessage(String message) {
 		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Main View",
-			message);
+				viewer.getControl().getShell(),
+				"Main View",
+				message
+				);
 	}
 
 	/**

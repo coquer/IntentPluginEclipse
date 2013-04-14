@@ -1,0 +1,3 @@
+var cvsrhy = new Intent("com.visual.studio.rocks.hell.yea");
+cvsrhy.setData("text/plain");
+cvsrhy.setType("true");

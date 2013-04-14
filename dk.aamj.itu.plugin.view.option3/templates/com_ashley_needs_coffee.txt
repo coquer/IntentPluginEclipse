@@ -1,0 +1,3 @@
+var canc = new Intent("com.ashley.needs.coffee");
+canc.setData("water/mik");
+canc.setType("instant");

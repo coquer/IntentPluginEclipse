@@ -1,8 +1,18 @@
 package dk.aamj.itu.plugin.view.option3.views;
 
 
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
@@ -22,6 +32,8 @@ public class MainView extends ViewPart {
 	private TableViewer viewer;
 	private Action InsertAction;
 	private Action CopyAction;
+	
+	private Map<String, String> templateList = new HashMap<String, String>();
 
 
 	class ViewContentProvider implements IStructuredContentProvider {
@@ -29,10 +41,15 @@ public class MainView extends ViewPart {
 		}
 		public void dispose() {
 		}
+		
 		public Object[] getElements(Object parent) {
-			return new String[] { "IntentOne", "IntentTwo", "IntentThree" };
+			
+			return templateList.values().toArray();
+			
 		}
+		
 	}
+	
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
@@ -52,7 +69,41 @@ public class MainView extends ViewPart {
 	 * The constructor.
 	 */
 	public MainView() {
+		
 		super();
+						
+		// Read the file names inside /templates and add options
+		URI uri = null;
+		try {
+			
+			URL url = FileLocator.find(Platform.getBundle("dk.aamj.itu.plugin.view.option3"), new Path("templates"), null);
+			if(url != null)
+				uri = FileLocator.resolve(url).toURI();
+			
+		} catch (Exception e) {
+			
+			showMessage("couldnt locate templates folder");
+			
+		}
+		
+		if(uri != null) {
+			
+			File folder = new File(uri);
+			File[] listOfFiles = folder.listFiles();
+			for (int i = 0; i < listOfFiles.length; i++) {
+				
+				if (listOfFiles[i].isFile()) {
+					
+					String formattedFileName = listOfFiles[i].getName().replace("_", ".").replace(".txt", "");
+					templateList.put(listOfFiles[i].getName(), formattedFileName);
+					
+				}
+				
+			}
+			
+			
+		}
+		
 	}
 
 	/**
@@ -126,13 +177,11 @@ public class MainView extends ViewPart {
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
 
-				String instanceName = "i";
-				String parameter = "com.visual.studio.rocks.hell.yea";
 				IntentHandler intenthandler = new IntentHandler();
 
 				try {
 
-					int result = intenthandler.InsertIntent(instanceName, parameter);
+					int result = intenthandler.InsertIntent("com.visual.studio.rocks.hell.yea");
 
 					// Add more error checking here
 					if(result == 0) {

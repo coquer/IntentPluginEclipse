@@ -1,5 +1,11 @@
 package dk.aamj.itu.plugin.view.option3.views;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,19 +28,12 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
-
-
 
 public class IntentHandler {
 	/* Default constructor, just in case */
@@ -67,12 +66,37 @@ public class IntentHandler {
 		parser.setKind(ASTParser.K_STATEMENTS);
 		parser.setResolveBindings(false);
 		return (Block) parser.createAST(null);
-//		CompilationUnit result = (CompilationUnit) parser.createAST(null);
-//		return result;
+		
+	}
+	
+	private String getSource(String intentActionName) {
+		
+		String formattedName = intentActionName.replace(".", "_");
+		String source = "";
+		
+		try {
+			
+			URL url = new URL("platform:/plugin/dk.aamj.itu.plugin.view.option3/templates/"+formattedName+".txt");
+			InputStream inputStream = (InputStream) url.openConnection().getInputStream();
+			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+			String inputLine;
+
+			while ((inputLine = in.readLine()) != null) {
+				System.out.println(inputLine);
+				source += inputLine;
+			}
+
+			in.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return source;
 		
 	}
 
-	public int InsertIntent(String instanceName, String parameter) throws Exception {
+	public int InsertIntent(String intentActionName) throws Exception {
 		
 		IWorkbenchWindow wb = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = wb.getActivePage();
@@ -97,7 +121,7 @@ public class IntentHandler {
 		int index = findIndexInMethod(method, cursorOffset);
 		Block methodBody = method.getBody();
 		
-		String source = "Intent i = new Intent(\"com.action.ash.needs.coffee\");i.setData(\"text/plain\");";
+		String source = getSource(intentActionName);
 		Block node = createASTFromIntentSource(source);
 		
 		for (int i = 0; i < node.statements().size(); i++) {
@@ -107,8 +131,8 @@ public class IntentHandler {
 
 		}
 		
-		ASTRewrite rewriter = ASTRewrite.create(astRoot.getAST());
-
+		//TODO This should also create the import * statement
+		
 		TextEdit edits = astRoot.rewrite(document, compilationUnit.getJavaProject().getOptions(true));
 		compilationUnit.applyTextEdit(edits, null);
 

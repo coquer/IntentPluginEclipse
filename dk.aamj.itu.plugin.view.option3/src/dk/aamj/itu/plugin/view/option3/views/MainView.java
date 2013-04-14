@@ -34,6 +34,7 @@ public class MainView extends ViewPart {
 	private Action CopyAction;
 	
 	private Map<String, String> templateList = new HashMap<String, String>();
+	private IntentHandler intentHandler = new IntentHandler();
 
 
 	class ViewContentProvider implements IStructuredContentProvider {
@@ -71,7 +72,7 @@ public class MainView extends ViewPart {
 	public MainView() {
 		
 		super();
-						
+				
 		// Read the file names inside /templates and add options
 		URI uri = null;
 		try {
@@ -138,9 +139,15 @@ public class MainView extends ViewPart {
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
+		
+		if (viewer.getSelection().isEmpty())
+			return;
+		
 		manager.add(CopyAction);
+		
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		
 	}
 
 
@@ -148,40 +155,40 @@ public class MainView extends ViewPart {
 
 		CopyAction = new Action() {
 			public void run() {
-
-				String instanceName = "i";
-				String parameter = "com.visual.studio.rocks.hell.yea";
-				IntentHandler intenthandler = new IntentHandler();
+				
+				ISelection selection = viewer.getSelection();
+				Object obj = ((IStructuredSelection)selection).getFirstElement();
 
 				try {
 
-					intenthandler.CopyIntent(instanceName, parameter);
+					intentHandler.CopyIntent(obj.toString().replace(".", "_"));
 
 				} catch (Exception e) {
 
 					e.printStackTrace();
-					showMessage("This is log " + e);
+					showMessage("ERROR: " + e);
 				}
 
 			}
 		};
 		CopyAction.setText("Copy");
-		CopyAction.setToolTipText("Copy selected Intent to clipboard");
+		CopyAction.setToolTipText("Copy selected Intent snippet to clipboard");
 		CopyAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK)
 				);
 
 		InsertAction = new Action() {
 			public void run() {
-
+				
 				ISelection selection = viewer.getSelection();
+				if(selection != null)
+					return;
+				
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
-
-				IntentHandler intenthandler = new IntentHandler();
 
 				try {
 
-					int result = intenthandler.InsertIntent("com.visual.studio.rocks.hell.yea");
+					int result = intentHandler.InsertIntent(obj.toString().replace(".", "_"));
 
 					// Add more error checking here
 					if(result == 0) {

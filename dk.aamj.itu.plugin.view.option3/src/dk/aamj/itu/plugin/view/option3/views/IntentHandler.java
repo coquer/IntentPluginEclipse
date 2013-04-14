@@ -49,12 +49,21 @@ public class IntentHandler {
 		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
 	}
 	
-	public void CopyIntent(String instanceName, String parameter) throws Exception {
+	/**
+	 * Copy intent code to the Clipboard 
+	 * @param intentActionName
+	 * @return
+	 * @throws Exception
+	 */
+	public void CopyIntent(String intentActionName) throws Exception {
 		
-		// Make the intent code and copy it to the clipboard
+		// Get the source
+		String source = getSource(intentActionName);
+		
+		// Add to clipboard
 		Display display = Display.getCurrent();
         Clipboard clipboard = new Clipboard(display);
-        clipboard.setContents(new Object[] { "this is my text" }, new Transfer[] { TextTransfer.getInstance() });
+        clipboard.setContents(new Object[] { source }, new Transfer[] { TextTransfer.getInstance() });
         clipboard.dispose();
 		
 	}
@@ -82,7 +91,6 @@ public class IntentHandler {
 			String inputLine;
 
 			while ((inputLine = in.readLine()) != null) {
-				System.out.println(inputLine);
 				source += inputLine;
 			}
 

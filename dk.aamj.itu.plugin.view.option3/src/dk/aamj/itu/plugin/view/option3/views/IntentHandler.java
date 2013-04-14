@@ -1,7 +1,5 @@
 package dk.aamj.itu.plugin.view.option3.views;
 
-//import java.awt.List;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +16,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
@@ -60,9 +59,21 @@ public class IntentHandler {
         clipboard.dispose();
 		
 	}
+	
+	private Block createASTFromIntentSource(String source) {
+			
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setSource(source.toCharArray());
+		parser.setKind(ASTParser.K_STATEMENTS);
+		parser.setResolveBindings(false);
+		return (Block) parser.createAST(null);
+//		CompilationUnit result = (CompilationUnit) parser.createAST(null);
+//		return result;
+		
+	}
 
 	public int InsertIntent(String instanceName, String parameter) throws Exception {
-
+		
 		IWorkbenchWindow wb = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = wb.getActivePage();
 		IEditorPart editor = page.getActiveEditor();
@@ -84,30 +95,19 @@ public class IntentHandler {
 		}
 
 		int index = findIndexInMethod(method, cursorOffset);
-		List statementsList = method.getBody().statements();
+		Block methodBody = method.getBody();
+		
+		String source = "Intent i = new Intent(\"com.action.ash.needs.coffee\");i.setData(\"text/plain\");";
+		Block node = createASTFromIntentSource(source);
+		
+		for (int i = 0; i < node.statements().size(); i++) {
 
-		VariableDeclarationFragment vdf = astRoot.getAST().newVariableDeclarationFragment();  
-		vdf.setName(astRoot.getAST().newSimpleName(instanceName));  
-		ClassInstanceCreation cc = astRoot.getAST().newClassInstanceCreation();  
-		cc.setType(astRoot.getAST().newSimpleType(astRoot.getAST().newSimpleName("Intent")));
-		StringLiteral l = astRoot.getAST().newStringLiteral();
-		l.setLiteralValue(parameter);
-		cc.arguments().add(l);
-		vdf.setInitializer(cc);
-		VariableDeclarationStatement vds = astRoot.getAST().newVariableDeclarationStatement(vdf);  
-		vds.setType(astRoot.getAST().newSimpleType(astRoot.getAST().newSimpleName("Intent")));
+			ASTNode singleStmt = (ASTNode) node.statements().get(i);
+			methodBody.statements().add(index + i, ASTNode.copySubtree(methodBody.getAST(), singleStmt));
 
-
-
-		statementsList.add(index+1, vds);
-
-
-
-
+		}
+		
 		ASTRewrite rewriter = ASTRewrite.create(astRoot.getAST());
-
-
-		Block block = method.getBody();
 
 		TextEdit edits = astRoot.rewrite(document, compilationUnit.getJavaProject().getOptions(true));
 		compilationUnit.applyTextEdit(edits, null);
@@ -119,54 +119,69 @@ public class IntentHandler {
 
 	}
 
-	private void getCursorPosition(){
-		IWorkbenchWindow wb = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IWorkbenchPage page = wb.getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-		IEditorInput input = editor.getEditorInput();
-
-		ITextEditor texteditor = (ITextEditor) editor;
-		IDocument document = texteditor.getDocumentProvider().getDocument(input);
-		ISelection selection = texteditor.getSelectionProvider().getSelection();
-		int cursorOffset = ((ITextSelection) selection).getOffset();
-	}
-
-	private MethodDeclaration findMethod(int offset, CompilationUnit astRoot){
+	/**
+	 * Find the method which the cursor is currently in
+	 * @param offset
+	 * @param astRoot
+	 * @return MethodDeclaration
+	 */
+	private MethodDeclaration findMethod(int offset, CompilationUnit astRoot) {
+		
 		MethodDeclaration methodDecl = null;
 
-		List decls = ((TypeDeclaration)astRoot.types().get(0)).bodyDeclarations();
-		for (Iterator iterator = decls.iterator(); iterator.hasNext();){
+		List<BodyDeclaration> decls = ((TypeDeclaration)astRoot.types().get(0)).bodyDeclarations();
+		
+		for (Iterator<BodyDeclaration> iterator = decls.iterator(); iterator.hasNext();){
+			
 			BodyDeclaration decl = (BodyDeclaration) iterator.next();
-			if(decl instanceof MethodDeclaration){
+			if(decl instanceof MethodDeclaration) {
+				
 				methodDecl = (MethodDeclaration) decl;
 				int startRange = methodDecl.getBody().getStartPosition();
 				int endRange = methodDecl.getBody().getStartPosition() + methodDecl.getBody().getLength();
-				if(offset > startRange && offset < endRange){
+				
+				if(offset >= startRange && offset <= endRange)
 					return methodDecl;
-				}
+				
 			}
+			
 		}
+		
 		return methodDecl;
+		
 	}
 
+	/**
+	 * Return the current statement inside a method, which the cursor currently has focus
+	 * @param method
+	 * @param offset
+	 * @return int
+	 */
 	private int findIndexInMethod(MethodDeclaration method, int offset){
-		int index = -1;
 
-		Block body = method.getBody();
-		List statements = body.statements();
+		List<Statement> statements = method.getBody().statements();
+		
+		if(statements.size() == 0)
+			return 0;
+		
 		for(int i = 0; i < statements.size(); i++){
+			
 			Statement statement = (Statement) statements.get(i);
 			int startRange = statement.getStartPosition();
 			int endRange = statement.getStartPosition() + statement.getLength();
-			if(offset > startRange){
-				if(offset < endRange){
-					return i;
-				}
-			}else{
-				return i;
-			}
+			
+			//Is cursor at the start of the method?
+			if(offset <= startRange && i == 0)
+				return 0;
+			
+			// Is cursor inside current statement
+			if(offset >= startRange && offset <= endRange)
+				return i+1;
+			
 		}
 
-		return index;
-	}  
-}//closes class 
+		// Insert at end
+		return statements.size();
+	}
+	
+} 

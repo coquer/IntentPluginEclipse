@@ -181,7 +181,7 @@ public class MainView extends ViewPart {
 			public void run() {
 				
 				ISelection selection = viewer.getSelection();
-				if(selection != null)
+				if(selection == null)
 					return;
 				
 				Object obj = ((IStructuredSelection)selection).getFirstElement();

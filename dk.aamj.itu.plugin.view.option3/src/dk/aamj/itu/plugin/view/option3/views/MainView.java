@@ -188,7 +188,8 @@ public class MainView extends ViewPart {
 
 				try {
 
-					int result = intentHandler.InsertIntent(obj.toString().replace(".", "_"));
+//					int result = intentHandler.InsertIntent(obj.toString().replace(".", "_"));
+					int result = intentHandler.InsertIntent(obj.toString());
 
 					// Add more error checking here
 					if(result == 0) {

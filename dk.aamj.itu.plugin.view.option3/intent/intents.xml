@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<intents>
+	<intent name="send2printer">
+		<action>com.rcreations.send2printer.print</action>
+		<category>android.intent.category.DEFAULT</category>
+		<data>Uri.parse(phoneNumber)</data>
+	</intent>
+	<intent name="bigRedButtonPressed">
+		<action>com.perseum.bigRedButtonPressed</action>
+		<category>android.intent.category.DEFAULT</category>
+		<data></data>
+	</intent>
+</intents>

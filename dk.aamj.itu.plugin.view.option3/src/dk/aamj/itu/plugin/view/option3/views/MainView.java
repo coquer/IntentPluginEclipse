@@ -6,7 +6,11 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
@@ -20,6 +24,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 public class MainView extends ViewPart {
@@ -74,36 +82,39 @@ public class MainView extends ViewPart {
 		super();
 				
 		// Read the file names inside /templates and add options
-		URI uri = null;
-		try {
-			
-			URL url = FileLocator.find(Platform.getBundle("dk.aamj.itu.plugin.view.option3"), new Path("templates"), null);
-			if(url != null)
-				uri = FileLocator.resolve(url).toURI();
-			
-		} catch (Exception e) {
-			
-			showMessage("couldnt locate templates folder");
-			
-		}
+//		URI uri = null;
+//		try {
+//			
+//			URL url = FileLocator.find(Platform.getBundle("dk.aamj.itu.plugin.view.option3"), new Path("templates"), null);
+//			if(url != null)
+//				uri = FileLocator.resolve(url).toURI();
+//			
+//		} catch (Exception e) {
+//			
+//			showMessage("couldnt locate templates folder");
+//			
+//		}
+		List<String> result = IntentHandler.getIntentNames();
+		for(String s : result)
+			templateList.put(s, s);
 		
-		if(uri != null) {
-			
-			File folder = new File(uri);
-			File[] listOfFiles = folder.listFiles();
-			for (int i = 0; i < listOfFiles.length; i++) {
-				
-				if (listOfFiles[i].isFile()) {
-					
-					String formattedFileName = listOfFiles[i].getName().replace("_", ".").replace(".txt", "");
-					templateList.put(listOfFiles[i].getName(), formattedFileName);
-					
-				}
-				
-			}
-			
-			
-		}
+//		if(uri != null) {
+//			
+//			File folder = new File(uri);
+//			File[] listOfFiles = folder.listFiles();
+//			for (int i = 0; i < listOfFiles.length; i++) {
+//				
+//				if (listOfFiles[i].isFile()) {
+//					
+//					String formattedFileName = listOfFiles[i].getName().replace("_", ".").replace(".txt", "");
+////					templateList.put(listOfFiles[i].getName(), formattedFileName);
+//					
+//				}
+//				
+//			}
+//			
+//			
+//		}
 		
 	}
 
@@ -231,4 +242,5 @@ public class MainView extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
+	
 }

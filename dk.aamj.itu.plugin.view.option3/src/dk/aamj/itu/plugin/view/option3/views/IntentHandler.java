@@ -6,7 +6,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,6 +25,9 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jdt.core.dom.AST;
@@ -67,7 +72,7 @@ public class IntentHandler {
 	public void CopyIntent(String intentActionName) throws Exception {
 
 		// Get the source
-		String source = getSource(intentActionName);
+		String source = readXml(intentActionName);
 
 		// Add to clipboard
 		Display display = Display.getCurrent();
@@ -172,8 +177,11 @@ public class IntentHandler {
 
 	public static String readXml(String expectedStr) {
 		try {
-
-			File fXmlFile = new File("intent/intents.xml");
+			URL url = FileLocator.find(Platform.getBundle("dk.aamj.itu.plugin.view.option3"), new Path("intent/intents.xml"), null);
+			URI uri = null;
+			if(url != null)
+				uri = FileLocator.resolve(url).toURI();
+			File fXmlFile = new File(uri);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -216,6 +224,9 @@ public class IntentHandler {
 		}
 		return null;
 	}
+	
+	
+	
 
 	/**
 	 * Find the method which the cursor is currently in
@@ -286,6 +297,43 @@ public class IntentHandler {
 
 		// Insert at end
 		return statements.size();
+	}
+	
+	public static List<String> getIntentNames(){
+		List<String> names = new ArrayList<String>();
+		try {
+
+			URL url = FileLocator.find(Platform.getBundle("dk.aamj.itu.plugin.view.option3"), new Path("intent/intents.xml"), null);
+			URI uri = null;
+			if(url != null)
+				uri = FileLocator.resolve(url).toURI();
+			File fXmlFile = new File(uri);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			doc.getDocumentElement().normalize();
+			NodeList nList = doc.getElementsByTagName("intent");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+
+				Node nNode = nList.item(temp);
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+					Element eElement = (Element) nNode;
+
+					String intentNames = eElement.getAttribute("name");
+					names.add(intentNames);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return names;
+		
 	}
 
 }

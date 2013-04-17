@@ -93,6 +93,7 @@ public class IntentHandler {
 
 	}
 
+	@SuppressWarnings("unused")
 	private String getSource(String intentActionName) {
 
 		String formattedName = intentActionName.replace(".", "_");
@@ -123,20 +124,18 @@ public class IntentHandler {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public int InsertIntent(String intentActionName) throws Exception {
 
-		IWorkbenchWindow wb = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
+		IWorkbenchWindow wb = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = wb.getActivePage();
 		IEditorPart editor = page.getActiveEditor();
 		IEditorInput input = editor.getEditorInput();
 
-		ICompilationUnit compilationUnit = (ICompilationUnit) JavaUI
-				.getEditorInputJavaElement(editor.getEditorInput());
+		ICompilationUnit compilationUnit = (ICompilationUnit) JavaUI.getEditorInputJavaElement(editor.getEditorInput());
 
 		ITextEditor texteditor = (ITextEditor) editor;
-		IDocument document = texteditor.getDocumentProvider()
-				.getDocument(input);
+		IDocument document = texteditor.getDocumentProvider().getDocument(input);
 		ISelection selection = texteditor.getSelectionProvider().getSelection();
 		int cursorOffset = ((ITextSelection) selection).getOffset();
 
@@ -157,15 +156,13 @@ public class IntentHandler {
 		for (int i = 0; i < node.statements().size(); i++) {
 
 			ASTNode singleStmt = (ASTNode) node.statements().get(i);
-			methodBody.statements().add(index + i,
-					ASTNode.copySubtree(methodBody.getAST(), singleStmt));
+			methodBody.statements().add(index + i, ASTNode.copySubtree(methodBody.getAST(), singleStmt));
 
 		}
 
 		// TODO This should also create the import * statement
 
-		TextEdit edits = astRoot.rewrite(document, compilationUnit
-				.getJavaProject().getOptions(true));
+		TextEdit edits = astRoot.rewrite(document, compilationUnit.getJavaProject().getOptions(true));
 		compilationUnit.applyTextEdit(edits, null);
 
 		compilationUnit.getBuffer().setContents(document.get());
@@ -204,15 +201,14 @@ public class IntentHandler {
 						String dataField = eElement
 								.getElementsByTagName("data").item(0)
 								.getTextContent();
-						String intentName = "Intent i = new Intent(\""
-								+ eElement.getAttribute("name") + "\")";
+						String intentName = "Intent i = new Intent(\""+ eElement.getAttribute("name") + "\")";
 
 						intentName += "\n i.putExtra(\"TODO\", extraValue)";
 
 						if (!dataField.isEmpty()) {
 							intentName += "\n i.setData(" + dataField + ")";
 						}
-						return intentNames;
+						return intentName;
 					}
 
 				}
